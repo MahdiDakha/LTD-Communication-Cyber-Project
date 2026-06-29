@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LTD Communication</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <%- include("partials/navbar") %>
+
+  <main class="page-shell">
+    <section class="page-card">
+      <div class="system-header">
+        <div>
+          <span class="eyebrow">
+            <% if (user.role === "admin") { %>
+              Admin Dashboard
+            <% } else if (user.role === "customer") { %>
+              Customer Dashboard
+            <% } else { %>
+              Viewer Dashboard
+            <% } %>
+          </span>
+          <div class="brand-line">LTD Communication</div>
+          <h1 class="page-title">Account Dashboard</h1>
+          <p class="page-description">
+            Account overview, package status, and approval tasks in the secure LTD Communication portal.
+          </p>
+        </div>
+
+        <div class="identity-card">
+          <span>Signed In As</span>
+          <strong><%= user.username %></strong>
+          <small><%= user.email %> | Role: <%= user.role %></small>
+        </div>
+      </div>
+
+      <div class="system-body">
+        <% if (error) { %>
+          <div class="alert error">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <% if (success) { %>
+          <div class="alert success">
+            <%= success %>
+          </div>
+        <% } %>
+
+        <div class="summary-grid three-up">
+          <div class="summary-card">
+            <span>Username</span>
+            <strong><%= user.username %></strong>
+            <small>Active account in the secure version.</small>
+          </div>
+
+          <div class="summary-card">
+            <span>Email</span>
+            <strong><%= user.email %></strong>
+            <small>Primary account contact and recovery address.</small>
+          </div>
+
+          <div class="summary-card">
+            <span>Role</span>
+            <strong><%= user.role %></strong>
+            <small>Newly registered users are assigned viewer by default.</small>
+          </div>
+
+          <div class="summary-card">
+            <span>Session</span>
+            <strong>Protected</strong>
+            <small>The current session remains protected by the existing backend logic.</small>
+          </div>
+        </div>
+
+        <% if (user.role === "admin") { %>
+          <div class="content-grid two-column">
+            <section class="panel">
+              <h2 class="panel-title">Admin Actions</h2>
+              <p class="panel-text">Review package requests and manage customer records from a single internal workspace.</p>
+
+              <div class="action-row">
+                <a class="button" href="/customers">Customers</a>
+                <a class="button secondary" href="/packages">Packages</a>
+                <a class="button tertiary" href="/change-password">Change Password</a>
+              </div>
+            </section>
+
+            <section class="panel">
+              <h2 class="panel-title">Pending Subscription Requests</h2>
+
+              <% if (!pendingRequests || pendingRequests.length === 0) { %>
+                <div class="empty-state">
+                  <p>No pending subscription requests are waiting for admin review.</p>
+                </div>
+              <% } else { %>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Request ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Requested Package</th>
+                        <th>Speed</th>
+                        <th>Price</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% pendingRequests.forEach((requestItem) => { %>
+                        <tr>
+                          <td data-label="Request ID"><%= requestItem.id %></td>
+                          <td data-label="Username"><%= requestItem.username %></td>
+                          <td data-label="Email"><%= requestItem.email %></td>
+                          <td data-label="Requested Package"><%= requestItem.package_name %></td>
+                          <td data-label="Speed"><%= requestItem.speed %></td>
+                          <td data-label="Price"><%= requestItem.price %> NIS</td>
+                          <td data-label="Created At"><%= requestItem.created_at %></td>
+                          <td data-label="Actions">
+                            <div class="inline-actions">
+                              <form action="/admin/requests/<%= requestItem.id %>/approve" method="POST" class="inline-form">
+                                <button type="submit" class="button success small-button">Approve</button>
+                              </form>
+                              <form action="/admin/requests/<%= requestItem.id %>/reject" method="POST" class="inline-form">
+                                <button type="submit" class="button danger small-button">Reject</button>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } %>
+            </section>
+          </div>
+        <% } else if (user.role === "customer") { %>
+          <div class="content-grid two-column">
+            <section class="panel">
+              <h2 class="panel-title">Current Package</h2>
+
+              <% if (currentPackage) { %>
+                <div class="summary-grid three-up">
+                  <div class="summary-card">
+                    <span>Package</span>
+                    <strong><%= currentPackage.package_name %></strong>
+                    <small>Assigned service for this customer account.</small>
+                  </div>
+
+                  <div class="summary-card">
+                    <span>Speed</span>
+                    <strong><%= currentPackage.speed %></strong>
+                    <small>Current connection speed of the active package.</small>
+                  </div>
+
+                  <div class="summary-card">
+                    <span>Price</span>
+                    <strong><%= currentPackage.price %> NIS</strong>
+                    <small>Current price of the assigned package.</small>
+                  </div>
+                </div>
+              <% } else { %>
+                <div class="empty-state">
+                  <p>No active package is currently linked to this customer account.</p>
+                </div>
+              <% } %>
+            </section>
+
+            <section class="panel">
+              <h2 class="panel-title">Customer Actions</h2>
+              <p class="panel-text">Review the active internet service or disconnect it when needed.</p>
+
+              <div class="action-row">
+                <a class="button" href="/packages">Packages</a>
+                <a class="button secondary" href="/change-password">Change Password</a>
+              </div>
+
+              <form action="/disconnect-service" method="POST" class="form inline-form">
+                <button type="submit" class="button danger">Disconnect Service</button>
+              </form>
+            </section>
+          </div>
+        <% } else { %>
+          <div class="content-grid two-column">
+            <section class="panel">
+              <h2 class="panel-title">Viewer Actions</h2>
+              <p class="panel-text">Browse available plans and submit one package request for admin review.</p>
+
+              <div class="action-row">
+                <a class="button" href="/packages">View Packages</a>
+                <a class="button secondary" href="/change-password">Change Password</a>
+              </div>
+            </section>
+
+            <section class="panel">
+              <h2 class="panel-title">Request Status</h2>
+
+              <% if (latestRequest) { %>
+                <p class="panel-text">
+                  Latest package request:
+                  <strong><%= latestRequest.package_name %></strong>
+                </p>
+                <p class="panel-text">
+                  Status:
+                  <span class="status-badge <%= latestRequest.status %>"><%= latestRequest.status %></span>
+                </p>
+                <p class="panel-text">Requested at: <%= latestRequest.created_at %></p>
+              <% } else { %>
+                <div class="empty-state">
+                  <p>No package request has been submitted yet.</p>
+                </div>
+              <% } %>
+            </section>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

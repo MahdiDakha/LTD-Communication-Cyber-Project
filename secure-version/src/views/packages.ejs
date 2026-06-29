@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LTD Communication</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <%- include("partials/navbar") %>
+
+  <main class="page-shell">
+    <section class="page-card">
+      <div class="system-header">
+        <div>
+          <span class="eyebrow">Packages</span>
+          <div class="brand-line">LTD Communication</div>
+          <h1 class="page-title">Internet Packages</h1>
+          <p class="page-description">
+            Compare the internet plans available in the LTD Communication portal.
+          </p>
+        </div>
+
+        <div class="identity-card">
+          <span>Catalog</span>
+          <strong>Public Page</strong>
+          <small>Available to guests and logged-in users.</small>
+        </div>
+      </div>
+
+      <div class="system-body">
+        <% if (error) { %>
+          <div class="alert error">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <% if (success) { %>
+          <div class="alert success">
+            <%= success %>
+          </div>
+        <% } %>
+
+        <div class="summary-grid two-up">
+          <div class="summary-card">
+            <span>Total Packages</span>
+            <strong><%= packages.length %></strong>
+            <small>Internet package plans currently available in the system.</small>
+          </div>
+
+          <div class="summary-card">
+            <% if (!user) { %>
+              <span>Guest Access</span>
+              <strong>Public Catalog</strong>
+              <small>Login or register to request an internet package.</small>
+            <% } else if (user.role === "customer") { %>
+              <span>Current Role</span>
+              <strong>Customer</strong>
+              <small>Your active package is displayed below.</small>
+            <% } else if (user.role === "admin") { %>
+              <span>Current Role</span>
+              <strong>Admin</strong>
+              <small>Admin users can review package requests from the dashboard.</small>
+            <% } else { %>
+              <span>Current Role</span>
+              <strong><%= user.role %></strong>
+              <small>Viewer users can request one package at a time.</small>
+            <% } %>
+          </div>
+        </div>
+
+        <% if (!user) { %>
+          <div class="panel compact-panel">
+            <h2 class="panel-title">Request Access</h2>
+            <p class="panel-text">Guests can browse the catalog. Login or register to request one package from the portal.</p>
+
+            <div class="action-row">
+              <a class="button" href="/login">Login</a>
+              <a class="button secondary" href="/register">Register</a>
+            </div>
+          </div>
+        <% } %>
+
+        <% if (user && user.role === "viewer" && latestRequest) { %>
+          <div class="panel compact-panel">
+            <h2 class="panel-title">Latest Request</h2>
+            <p class="panel-text">
+              Package: <strong><%= latestRequest.package_name %></strong>
+              |
+              Status:
+              <span class="status-badge <%= latestRequest.status %>"><%= latestRequest.status %></span>
+            </p>
+            <p class="panel-text">Requested at: <%= latestRequest.created_at %></p>
+
+            <% if (pendingRequest) { %>
+              <p class="panel-text">A pending request already exists, so a new request cannot be submitted until admin review is completed.</p>
+            <% } %>
+          </div>
+        <% } %>
+
+        <% if (user && user.role === "customer") { %>
+          <div class="panel compact-panel">
+            <h2 class="panel-title">Current Active Package</h2>
+
+            <% if (currentPackage) { %>
+              <div class="summary-grid three-up">
+                <div class="summary-card">
+                  <span>Package</span>
+                  <strong><%= currentPackage.package_name %></strong>
+                  <small>Your current internet service plan.</small>
+                </div>
+
+                <div class="summary-card">
+                  <span>Speed</span>
+                  <strong><%= currentPackage.speed %></strong>
+                  <small>Provisioned speed for the active package.</small>
+                </div>
+
+                <div class="summary-card">
+                  <span>Price</span>
+                  <strong><%= currentPackage.price %> NIS</strong>
+                  <small>Current price of the assigned service.</small>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="empty-state">
+                <p>No active package is assigned to this customer account.</p>
+              </div>
+            <% } %>
+          </div>
+        <% } %>
+
+        <% if (packages.length === 0) { %>
+          <div class="empty-state">
+            <p>No internet packages were found in the system.</p>
+          </div>
+        <% } else { %>
+          <div class="package-grid">
+            <% packages.forEach((pkg) => { %>
+              <article class="package-card <%= user && user.role === 'customer' && currentPackage && currentPackage.package_name === pkg.package_name ? 'current-package' : '' %>">
+                <div class="package-card-top">
+                  <div>
+                    <span class="package-label">Package</span>
+                    <h2 class="package-title"><%= pkg.package_name %></h2>
+                  </div>
+
+                  <% if (user && user.role === "customer" && currentPackage && currentPackage.package_name === pkg.package_name) { %>
+                    <span class="status-badge approved">Active</span>
+                  <% } else if (user && user.role === "viewer" && latestRequest && latestRequest.package_name === pkg.package_name) { %>
+                    <span class="status-badge <%= latestRequest.status %>"><%= latestRequest.status %></span>
+                  <% } %>
+                </div>
+
+                <div class="package-speed"><%= pkg.speed %></div>
+                <div class="package-price"><%= pkg.price %> NIS / month</div>
+
+                <% if (!user) { %>
+                  <p class="package-note">Login or register to request this package from the public catalog.</p>
+                <% } else if (user.role === "customer" && currentPackage && currentPackage.package_name === pkg.package_name) { %>
+                  <p class="package-note">This plan is currently active on the account.</p>
+                <% } else if (user.role === "admin") { %>
+                  <p class="package-note">Available plan visible to admin users for review and demonstration.</p>
+                <% } else if (pendingRequest) { %>
+                  <p class="package-note">A request is already waiting for admin review before another package can be selected.</p>
+                <% } else { %>
+                  <p class="package-note">Submit this plan for admin approval to move from viewer to customer.</p>
+                <% } %>
+
+                <% if (user && user.role === "viewer") { %>
+                  <div class="action-row">
+                    <% if (pendingRequest) { %>
+                      <span class="status-badge pending">Pending Review</span>
+                    <% } else { %>
+                      <form action="/packages/request/<%= pkg.id %>" method="POST" class="inline-form">
+                        <button type="submit" class="button">Request Package</button>
+                      </form>
+                    <% } %>
+                  </div>
+                <% } %>
+              </article>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

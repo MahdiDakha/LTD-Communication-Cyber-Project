@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LTD Communication</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <%- include("partials/navbar") %>
+
+  <main class="page-shell auth-shell">
+    <section class="page-card auth-card">
+      <div class="auth-card-inner">
+        <span class="section-label">Portal Access</span>
+        <div class="brand-line">LTD Communication</div>
+        <h1 class="auth-title">Login</h1>
+        <p class="auth-subtitle">Sign in to the secure customer portal with your existing account credentials.</p>
+
+        <% if (error) { %>
+          <div class="alert error">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <% if (success) { %>
+          <div class="alert success">
+            <%= success %>
+          </div>
+        <% } %>
+
+        <form action="/login" method="POST" class="form">
+          <div class="field">
+            <label>Username</label>
+            <input
+              type="text"
+              name="username"
+              value="<%= formData.username || '' %>"
+              placeholder="Enter username"
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter password"
+              required
+            >
+          </div>
+
+          <button type="submit">Login</button>
+        </form>
+
+        <div class="footer-links auth-links">
+          <a class="nav-link" href="/">Home</a>
+          <a class="nav-link" href="/register">Register</a>
+          <a class="nav-link" href="/forgot-password">Forgot Password</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

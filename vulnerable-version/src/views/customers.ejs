@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LTD Communication</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <%- include("partials/navbar") %>
+
+  <main class="page-shell">
+    <section class="page-card">
+      <div class="system-header">
+        <div>
+          <span class="eyebrow">Customers</span>
+          <div class="brand-line">LTD Communication</div>
+          <h1 class="page-title">Customer Records</h1>
+          <p class="page-description">
+            Internal customer management workspace for the secure LTD Communication portal.
+          </p>
+        </div>
+
+        <div class="identity-card">
+          <span>Logged In As</span>
+          <strong><%= user.username %></strong>
+          <small>Role: <%= user.role %></small>
+        </div>
+      </div>
+
+      <div class="system-body">
+        <% if (error) { %>
+          <div class="alert error">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <% if (success) { %>
+          <div class="alert success">
+            <%= success %>
+          </div>
+        <% } %>
+
+        <div class="summary-grid three-up">
+          <div class="summary-card">
+            <span>Total Customers</span>
+            <strong><%= customers.length %></strong>
+            <small>Profiles currently stored in the secure database.</small>
+          </div>
+
+          <div class="summary-card">
+            <span>Sectors</span>
+            <strong><%= sectors.length %></strong>
+            <small>Available business segments for classification.</small>
+          </div>
+
+          <div class="summary-card">
+            <span>Packages</span>
+            <strong><%= packages.length %></strong>
+            <small>Internet package options ready for assignment.</small>
+          </div>
+        </div>
+
+        <div class="content-grid two-column">
+          <section class="panel">
+            <h2 class="panel-title">Add New Customer</h2>
+            <p class="panel-text">This admin-only form remains available for the secure project customer data flow.</p>
+
+            <form action="/customers" method="POST" class="form grid-form">
+              <div>
+                <label>Full Name</label>
+                <input
+                  type="text"
+                  name="fullName"
+                  placeholder="Customer full name"
+                  required
+                >
+              </div>
+
+              <div>
+                <label>Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="customer@email.com"
+                >
+              </div>
+
+              <div>
+                <label>Phone</label>
+                <input
+                  type="text"
+                  name="phone"
+                  placeholder="0501234567"
+                >
+              </div>
+
+              <div>
+                <label>Sector</label>
+                <select name="sectorId">
+                  <option value="">Select sector</option>
+                  <% sectors.forEach((sector) => { %>
+                    <option value="<%= sector.id %>">
+                      <%= sector.sector_name %>
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+
+              <div class="full-row">
+                <label>Internet Package</label>
+                <select name="packageId">
+                  <option value="">Select package</option>
+                  <% packages.forEach((pkg) => { %>
+                    <option value="<%= pkg.id %>">
+                      <%= pkg.package_name %> | <%= pkg.speed %> | <%= pkg.price %> NIS
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+
+              <div class="full-row">
+                <button type="submit">Add Customer</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel-title">Customers List</h2>
+            <p class="panel-text">Customer fields remain safely displayed with secure EJS escaping in this version.</p>
+
+            <% if (customers.length === 0) { %>
+              <div class="empty-state">
+                <p>No customers found yet. Add the first one from the form to start building the list.</p>
+              </div>
+            <% } else { %>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Full Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Sector</th>
+                      <th>Package</th>
+                      <th>Created At</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <% customers.forEach((customer) => { %>
+                      <tr>
+                        <td data-label="ID"><%= customer.id %></td>
+                        <td data-label="Full Name"><%- customer.full_name %></td>
+                        <td data-label="Email"><%= customer.email || "-" %></td>
+                        <td data-label="Phone"><%= customer.phone || "-" %></td>
+                        <td data-label="Sector"><%= customer.sector_name || "-" %></td>
+                        <td data-label="Package">
+                          <% if (customer.package_name) { %>
+                            <span class="package-name"><%= customer.package_name %></span>
+                            <small class="package-meta"><%= customer.speed %> | <%= customer.price %> NIS</small>
+                          <% } else { %>
+                            -
+                          <% } %>
+                        </td>
+                        <td data-label="Created At"><%= customer.created_at %></td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            <% } %>
+          </section>
+        </div>
+
+        <div class="action-row">
+          <a class="button secondary" href="/dashboard">Dashboard</a>
+          <a class="button secondary" href="/packages">Packages</a>
+          <a class="button tertiary" href="/change-password">Change Password</a>
+          <a class="button tertiary" href="/logout">Logout</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

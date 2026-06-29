@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LTD Communication</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <%- include("partials/navbar") %>
+
+  <main class="page-shell home-shell">
+    <section class="portal-home">
+      <section class="page-card portal-hero">
+        <div class="portal-hero-head">
+          <div>
+            <span class="section-label">Vulnerable Version - For Cyber Demonstration Only</span>
+            <div class="brand-line">LTD Communication</div>
+            <h1 class="portal-title">LTD Communication Portal</h1>
+            <p class="portal-subtitle">
+              Secure login, package access, approvals, and customer management in one compact portal.
+            </p>
+          </div>
+
+          <aside class="portal-meta">
+            <span class="section-label">Portal</span>
+            <strong>Customer and admin workspace</strong>
+            <p>Built for the secure final project flow.</p>
+          </aside>
+        </div>
+
+        <% if (!user) { %>
+          <div class="action-row portal-actions">
+            <a class="button" href="/login">Login</a>
+            <a class="button secondary" href="/register">Register</a>
+            <a class="button tertiary" href="/packages">View Packages</a>
+          </div>
+        <% } else if (user.role === "admin") { %>
+          <div class="action-row portal-actions">
+            <a class="button" href="/dashboard">Dashboard</a>
+            <a class="button secondary" href="/customers">Customers</a>
+            <a class="button tertiary" href="/packages">View Packages</a>
+          </div>
+        <% } else if (user.role === "customer") { %>
+          <div class="action-row portal-actions">
+            <a class="button" href="/dashboard">Dashboard</a>
+            <a class="button secondary" href="/packages">View Packages</a>
+            <a class="button tertiary" href="/change-password">Change Password</a>
+          </div>
+        <% } else { %>
+          <div class="action-row portal-actions">
+            <a class="button" href="/dashboard">Dashboard</a>
+            <a class="button secondary" href="/packages">View Packages</a>
+            <a class="button tertiary" href="/change-password">Change Password</a>
+          </div>
+        <% } %>
+      </section>
+
+      <div class="feature-grid">
+        <article class="feature-card">
+          <span>Secure Login</span>
+          <h3>Protected access</h3>
+          <p>Secure authentication for portal users.</p>
+        </article>
+
+        <article class="feature-card">
+          <span>Internet Packages</span>
+          <h3>Package catalog</h3>
+          <p>Browse available plans in a compact grid.</p>
+        </article>
+
+        <article class="feature-card">
+          <span>Admin Approval</span>
+          <h3>Review flow</h3>
+          <p>Approve or reject viewer package requests.</p>
+        </article>
+
+        <article class="feature-card">
+          <span>Customer Dashboard</span>
+          <h3>Service status</h3>
+          <p>See current role, package, and request status.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

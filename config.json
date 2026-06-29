@@ -1,0 +1,14 @@
+{
+  "passwordPolicy": {
+    "minLength": 10,
+    "requireUppercase": true,
+    "requireLowercase": true,
+    "requireNumbers": true,
+    "requireSpecialChars": true,
+    "dictionaryCheck": true,
+    "historyLimit": 3
+  },
+  "loginPolicy": {
+    "maxAttempts": 3
+  }
+}

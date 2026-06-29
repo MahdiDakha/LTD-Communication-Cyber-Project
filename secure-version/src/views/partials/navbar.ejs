@@ -1,0 +1,36 @@
+<% const currentUser = user || null; %>
+<% const isAdmin = currentUser && currentUser.role === "admin"; %>
+<% const isCustomer = currentUser && currentUser.role === "customer"; %>
+
+<header class="site-header">
+  <nav class="site-nav" aria-label="Primary Navigation">
+    <a class="site-brand" href="<%= currentUser ? '/dashboard' : '/' %>">
+      LTD Communication
+    </a>
+
+    <div class="site-links">
+      <% if (!currentUser) { %>
+        <a class="site-link" href="/">Home</a>
+        <a class="site-link" href="/packages">Packages</a>
+        <a class="site-link" href="/login">Login</a>
+        <a class="site-link" href="/register">Register</a>
+      <% } else if (isAdmin) { %>
+        <a class="site-link" href="/dashboard">Dashboard</a>
+        <a class="site-link" href="/customers">Customers</a>
+        <a class="site-link" href="/packages">Packages</a>
+        <a class="site-link" href="/change-password">Change Password</a>
+        <a class="site-link" href="/logout">Logout</a>
+      <% } else if (isCustomer) { %>
+        <a class="site-link" href="/dashboard">Dashboard</a>
+        <a class="site-link" href="/packages">Packages</a>
+        <a class="site-link" href="/change-password">Change Password</a>
+        <a class="site-link" href="/logout">Logout</a>
+      <% } else { %>
+        <a class="site-link" href="/dashboard">Dashboard</a>
+        <a class="site-link" href="/packages">Packages</a>
+        <a class="site-link" href="/change-password">Change Password</a>
+        <a class="site-link" href="/logout">Logout</a>
+      <% } %>
+    </div>
+  </nav>
+</header>
